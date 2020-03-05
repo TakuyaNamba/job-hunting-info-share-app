@@ -51,7 +51,7 @@ export default new Vuex.Store({
           name: getters.userName,
           address: getters.email
         })
-        firebase.firestore().collection(`companies/${company.companyname}/reviews`).doc(getters.uid).set({
+        firebase.firestore().collection(`companies`).doc(company.companyname).set({
           name: company.name,
           companyname: company.companyname,
           info: company.info,
