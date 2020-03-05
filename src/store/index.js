@@ -7,7 +7,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     login_user: null,
-    companies: []
+    companies: [],
+    reviews: []
   },
   mutations: {
     setLoginUser (state, user) {
@@ -24,6 +25,10 @@ export default new Vuex.Store({
       const index = state.companies.findIndex(company => company.id === id)
 
       state.companies[index] = company
+    },
+    addReview (state, { id, review }) {
+      review.id = id
+      state.reviews.push(review)
     }
   },
   actions: {
@@ -33,6 +38,11 @@ export default new Vuex.Store({
     fetchCompanies ({ commit }) {
       firebase.firestore().collection(`companies`).get().then(snapshot => {
         snapshot.forEach(doc => commit('addCompany', { id: doc.id, company: doc.data() }))
+      })
+    },
+    fetchReviews ({ commit }, company_id) {
+      firebase.firestore().collection(`companies/${company_id}/reviews`).get().then(snapshot => {
+        snapshot.forEach(doc => commit('addReview', { id: doc.id, review: doc.data() }))
       })
     },
     login() {
@@ -52,10 +62,9 @@ export default new Vuex.Store({
           address: getters.email
         })
         firebase.firestore().collection(`companies`).doc(company.companyname).set({
-          name: company.name,
           companyname: company.companyname,
-          info: company.info,
-          uid: getters.uid
+          uid: getters.uid,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).then(doc => {
           commit('addCompany', { id: doc.id, company })
         })
@@ -67,6 +76,18 @@ export default new Vuex.Store({
           commit('updateCompany', { id, company })
         })
       }
+    },
+    addReview ({ getters, commit }, review ) {
+      if (getters.uid) {
+        firebase.firestore().collection(`companies/${review.companyname}/reviews`).doc(review.name).set({
+          name: review.name,
+          companyname: review.companyname,
+          info: review.info,
+          uid: getters.uid
+        }).then(doc => {
+          commit('addReview', { id: doc.id, review })
+        })
+      }
     }
   },
   getters: {
@@ -74,6 +95,7 @@ export default new Vuex.Store({
     photoURL: state => state.login_user ? state.login_user.photoURL : '',
     email: state => state.login_user ? state.login_user.email : '',
     uid: state => state.login_user ? state.login_user.uid : null,
-    getCompanyById: state => id => state.companies.find(company => company.id === id)
+    getCompanyById: state => id => state.companies.find(company => company.id === id),
+    getReviewById: state => id => state.reviews.find(review => review.id === id)
   }
 })

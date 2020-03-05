@@ -3,6 +3,8 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Companies from '../views/Companies.vue'
 import CompanyForm from '../views/CompanyForm.vue'
+import CompanyReviews from '../views/CompanyReviews.vue'
+import ReviewForm from '../views/ReviewForm.vue'
 
 Vue.use(VueRouter)
 
@@ -23,12 +25,14 @@ const routes = [
     component: CompanyForm
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    path: '/companies/:company_id?/reviews',
+    name: 'Company_reviews',
+    component: CompanyReviews
+  },
+  {
+    path: '/companies/:company_id?/reviews/:review_id?/edit',
+    name: 'Review_edit',
+    component: ReviewForm
   }
 ]
 

@@ -2,16 +2,14 @@
   <v-container text-xs-center>
     <v-layout row wrap justify-center>
       <v-flex xs12 class="text-center">
-        <h1>会社情報編集</h1>
+        <h1>新規会社追加画面</h1>
       </v-flex>
 
       <v-flex xs5 mt-5>
         <v-card>
           <v-card-text>
             <v-form>
-               <v-text-field v-model="company.name" label="投稿者" disabled="true"></v-text-field>
                <v-text-field v-model="company.companyname" label="会社名"></v-text-field>
-               <v-text-field v-model="company.info" label="情報"></v-text-field>
                <div class="text-center">
                  <v-btn @click="$router.push({ name: 'Companies' })">キャンセル</v-btn>
                  <v-btn color="info" class="ml-2" @click="submit">保存</v-btn>
@@ -27,16 +25,6 @@
 <script>
 import { mapActions } from 'vuex'
 export default {
-  created () {
-    this.company.name = this.$store.getters.userName
-    if (!this.$route.params.company_id) return
-    const company = this.$store.getters.getCompanyById(this.$route.params.company_id)
-    if (company) {
-      this.company = company
-    } else {
-      this.$router.push({ name: 'companies' })
-    }
-  },
   data () {
     return {
       company: {}
@@ -44,15 +32,11 @@ export default {
   },
   methods: {
       submit () {
-        if (this.$route.params.company_id) {
-        this.updateCompany({ id: this.$route.params.company_id, company: this.company })
-      } else {
         this.addCompany(this.company)
-      }
         this.$router.push({ name: 'Companies' })
         this.company = {}
     },
-    ...mapActions(['addCompany','updateCompany'])
+    ...mapActions(['addCompany'])
   }
 }
 </script>

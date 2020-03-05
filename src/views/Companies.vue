@@ -1,6 +1,9 @@
 <template>
     <v-container>
         <v-layout row wrap>
+            <v-flex xs12 class="text-center">
+                <h1>会社情報一覧表示画面</h1>
+            </v-flex>
             <v-flex xs12 text-right>
                 <router-link :to="{ name: 'Company_edit' }">
                     <v-btn color="info">新規会社情報追加</v-btn>
@@ -8,9 +11,9 @@
             </v-flex>
             <v-flex justify-center>
                 <v-data-table :headers='headers' :items='companies'>
-                    <template v-slot:item.action="{ item }">
-                        <router-link :to="{ name: 'Company_edit', params: { company_id: item.id }}">
-                        <v-icon small class="mr-2">mdi-pencil</v-icon>
+                    <template v-slot:item.detail="{ item }">
+                        <router-link :to="{ name: 'Company_reviews', params: { company_id: item.id }}">
+                        <v-icon small class="mr-2">mdi-magnify</v-icon>
                         </router-link>
                     </template>
                 </v-data-table>
@@ -27,11 +30,9 @@ export default {
   data () {
     return {
       headers: [
-        { text: '投稿者', align: 'center', value: 'name' },
         { text: '会社名', align: 'center', value: 'companyname' },
-        { text: '情報', align: 'center', value: 'info' },
-        { text: '操作', align: 'center', value: 'action', sortable: false },
-        { text: '詳細表示', align: 'center', value: 'detail', sortable: false }
+        { text: 'レビュー数', align: 'center', value: 'review' },
+        { text: 'レビュー検索', align: 'center', value: 'detail' },
       ],
       companies: []
     }
