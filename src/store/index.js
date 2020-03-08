@@ -82,6 +82,9 @@ export default new Vuex.Store({
         firebase.firestore().collection(`companies/${review.companyname}/reviews`).doc(review.name).set({
           name: review.name,
           companyname: review.companyname,
+          university: review.university,
+          grade: review.grade,
+          major: review.major,
           info: review.info,
           uid: getters.uid
         }).then(doc => {

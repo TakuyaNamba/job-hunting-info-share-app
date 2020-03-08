@@ -11,13 +11,16 @@
             </v-flex>
             <v-flex justify-center>
                 <v-data-table :headers='headers' :items='reviews'>
+                    <template v-slot:item.info="{ item }">
+                        {{ item.info.substring(0,10)+"..." }}
+                    </template>
                     <template v-slot:item.action="{ item }">
                         <router-link :to="{ name: 'Review_edit', params: { review_id: item.id }}">
                         <v-icon small class="mr-2">mdi-pencil</v-icon>
                         </router-link>
                     </template>
                     <template v-slot:item.detail="{ item }">
-                        <router-link :to="{ name: 'Companies', params: { review_id: item.id }}">
+                        <router-link :to="{ name: 'Review_comments', params: { review_id: item.id }}">
                         <v-icon small class="mr-2">mdi-magnify</v-icon>
                         </router-link>
                     </template>

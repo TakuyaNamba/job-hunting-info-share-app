@@ -11,9 +11,12 @@
             <v-form>
                <v-text-field v-model="review.name" label="投稿者" disabled="true"></v-text-field>
                <v-text-field v-model="review.companyname" label="会社名" disabled="true"></v-text-field>
-               <v-text-field v-model="review.info" label="情報"></v-text-field>
+               <v-text-field v-model="review.university" label="大学"></v-text-field>
+               <v-text-field v-model="review.grade" label="学年"></v-text-field>
+               <v-text-field v-model="review.major" label="専攻"></v-text-field>
+               <v-text-field v-model="review.info" label="会社情報"></v-text-field>
                <div class="text-center">
-                 <v-btn @click="$router.push({ name: 'Companies' })">キャンセル</v-btn>
+                 <v-btn @click="$router.push({ name: 'Company_reviews', params: {company_id: review.companyname } })">キャンセル</v-btn>
                  <v-btn color="info" class="ml-2" @click="submit">保存</v-btn>
                </div>
             </v-form>
@@ -50,7 +53,7 @@ export default {
       } else {
         this.addReview(this.review)
       }
-        this.$router.push({ name: 'Company_reviews' })
+        this.$router.push({ name: 'Company_reviews', params: {company_id: this.review.companyname } })
         this.review = {}
     },
     ...mapActions(['addReview','updateReview'])

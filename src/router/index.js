@@ -5,6 +5,7 @@ import Companies from '../views/Companies.vue'
 import CompanyForm from '../views/CompanyForm.vue'
 import CompanyReviews from '../views/CompanyReviews.vue'
 import ReviewForm from '../views/ReviewForm.vue'
+import ReviewComments from '../views/ReviewComments.vue'
 
 Vue.use(VueRouter)
 
@@ -33,6 +34,11 @@ const routes = [
     path: '/companies/:company_id?/reviews/:review_id?/edit',
     name: 'Review_edit',
     component: ReviewForm
+  },
+  {
+    path: '/companies/:company_id?/reviews/:review_id?/comments',
+    name: 'Review_comments',
+    component: ReviewComments
   }
 ]
 
