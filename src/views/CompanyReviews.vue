@@ -20,7 +20,7 @@
                         </router-link>
                     </template>
                     <template v-slot:item.detail="{ item }">
-                        <router-link :to="{ name: 'Review_comments', params: { review_id: item.id }}">
+                        <router-link :to="{ name: 'Review_comments', params: { company_id: $route.params.company_id, review_id: item.id }}">
                         <v-icon small class="mr-2">mdi-magnify</v-icon>
                         </router-link>
                     </template>
@@ -35,6 +35,7 @@ import { mapActions } from 'vuex'
 
 export default {
   created () {
+    this.resetStateReviews()
     this.fetchReviews(this.$route.params.company_id)
     this.reviews = this.$store.state.reviews
   },
@@ -50,7 +51,7 @@ export default {
     }
   },
   methods : {
-    ...mapActions(['fetchReviews'])
+    ...mapActions(['resetStateReviews','fetchReviews'])
   }
 }
 </script>

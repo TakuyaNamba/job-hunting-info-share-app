@@ -8,9 +8,16 @@ export default new Vuex.Store({
   state: {
     login_user: null,
     companies: [],
-    reviews: []
+    reviews: [],
+    comments: []
   },
   mutations: {
+    resetStateReviews (state) {
+      state.reviews = []
+    },
+    resetStateComments (state) {
+      state.comments = []
+    },
     setLoginUser (state, user) {
       state.login_user = user
     },
@@ -29,9 +36,19 @@ export default new Vuex.Store({
     addReview (state, { id, review }) {
       review.id = id
       state.reviews.push(review)
+    },
+    addComment (state, { id, comment }) {
+      comment.id = id
+      state.comments.push(comment)
     }
   },
   actions: {
+    resetStateReviews ({ commit }) {
+      commit('resetStateReviews')
+    },
+    resetStateComments ({ commit }) {
+      commit('resetStateComments')
+    },
     setLoginUser ({ commit }, user) {
       commit('setLoginUser', user)
     },
@@ -43,6 +60,11 @@ export default new Vuex.Store({
     fetchReviews ({ commit }, company_id) {
       firebase.firestore().collection(`companies/${company_id}/reviews`).get().then(snapshot => {
         snapshot.forEach(doc => commit('addReview', { id: doc.id, review: doc.data() }))
+      })
+    },
+    fetchComments ({ commit }, {company_id, review_id}) {
+      firebase.firestore().collection(`companies/${company_id}/reviews/${review_id}/comments`).get().then(snapshot => {
+        snapshot.forEach(doc => commit('addComment', { id: doc.id, comment: doc.data() }))
       })
     },
     login() {
@@ -86,9 +108,26 @@ export default new Vuex.Store({
           grade: review.grade,
           major: review.major,
           info: review.info,
-          uid: getters.uid
+          uid: getters.uid,
+          photoURL: getters.photoURL,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).then(doc => {
           commit('addReview', { id: doc.id, review })
+        })
+      }
+    },
+    addComment ({ getters, commit }, comment ) {
+      if (getters.uid) {
+        firebase.firestore().collection(`companies/${comment.companyname}/reviews/${comment.reviewer}/comments`).doc(comment.name).set({
+          reviewer: comment.reviewer,
+          photoURL: comment.photoURL,
+          name: comment.name,
+          companyname: comment.companyname,
+          info: comment.info,
+          uid: getters.uid,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(doc => {
+          commit('addComment', { id: doc.id, comment })
         })
       }
     }
@@ -99,6 +138,7 @@ export default new Vuex.Store({
     email: state => state.login_user ? state.login_user.email : '',
     uid: state => state.login_user ? state.login_user.uid : null,
     getCompanyById: state => id => state.companies.find(company => company.id === id),
-    getReviewById: state => id => state.reviews.find(review => review.id === id)
+    getReviewById: state => id => state.reviews.find(review => review.id === id),
+    getCommentById: state => id => state.comments.find(comment => comment.id === id)
   }
 })
