@@ -1,5 +1,5 @@
 <template>
-  <v-container text-xs-center>
+  <v-container text-xs-center fluid>
     <v-layout row wrap justify-center>
        <v-flex xs5 mt-5>
             <v-card tile>
@@ -21,29 +21,45 @@
                 </v-col>
                 <v-col align="center" justify="center" cols="12">
                   <v-card-text>
-                    <v-text-field filled label="会社名" v-model="review.companyname"></v-text-field>
-                    <v-textarea filled auto-grow label="会社情報" v-model="review.info"></v-textarea>
+                    <v-text-field filled label="会社名" v-model="review.companyname" disabled="true"></v-text-field>
+                    <v-textarea filled auto-grow label="会社情報" v-model="review.info" disabled="true"></v-textarea>
                   </v-card-text>
                 </v-col>
-                <v-col cols="12">
+              </v-row>
+              <v-row no-gutters>
+                
                   <v-subheader>コメント一覧</v-subheader>
                   <v-list two-line>
+                  <v-col cols="12">
                     <v-list-item v-for="item in comments" v-bind:key="item.photoURL">
-                      <v-list-item-avatar>
-                        <v-img :src="item.photoURL"></v-img>
-                      </v-list-item-avatar>
-                      <v-list-item-content>
-                        <v-list-item-title v-html="item.name"></v-list-item-title>
-                        <v-list-item-subtitle v-html="item.info"></v-list-item-subtitle>
-                      </v-list-item-content>
+                        <v-list-item-avatar>
+                          <v-img :src="item.photoURL"></v-img>
+                        </v-list-item-avatar>
+
+                        <v-list-item-content>
+                          <v-list-item-title v-html="item.name"></v-list-item-title>
+                          <v-textarea outlined rounded auto-grow v-model="item.info" rows="1" v-bind:disabled="edit"></v-textarea>
+                        </v-list-item-content>
+ 
+                        <v-list-item-action>
+                          <v-btn icon>
+                            <v-icon color="grey lighten-1" @click="changeEdit">mdi-pencil</v-icon>
+                          </v-btn>
+                        </v-list-item-action>
+
+                        <v-list-item-action>
+                          <v-btn icon>
+                            <v-icon v-if="edit===false" color="grey lighten-1" @click="update(item)">mdi-content-save</v-icon>
+                          </v-btn>
+                        </v-list-item-action>
                     </v-list-item>
+                    </v-col>
                   </v-list>
-                </v-col>
                 <v-col cols="12">
                   <v-textarea outlined rounded filled auto-grow label="コメント" v-model="comment.info" rows="1"></v-textarea>
                 </v-col>
               </v-row>
-              <v-row>
+              <v-row no-gutters>
                 <v-col align="center" cols="6">
                   <v-btn @click="$router.push({ name: 'Companies' })">もっと見る</v-btn>
                 </v-col>
@@ -81,6 +97,7 @@ export default {
   },
   data () {
     return {
+      edit: true,
       headers: [
         { text: '会社名', align: 'center', value: 'companyname' },
       ],
@@ -91,11 +108,19 @@ export default {
   },
   methods: {
     submit () {
-        this.addComment(this.comment)
-        this.$router.push({ name: 'Review_comments', params: {company_id: this.review.companyname, review_id: this.comment.reviewer } })
-        this.comment.info = null
+      this.addComment(this.comment)
+      this.$router.push({ name: 'Review_comments', params: {company_id: this.review.companyname, review_id: this.comment.reviewer } })
+      this.comment.info = null
     },
-    ...mapActions(['addReview','updateReview','addComment','fetchComments','resetStateComments'])
+    changeEdit() {
+      this.edit = !this.edit
+    },
+    update (item) {
+        this.changeEdit()
+        this.check(item)
+        this.updateComment({id: this.$route.params.comment_id, comment: item})
+    },
+    ...mapActions(['addComment','updateComment','fetchComments','resetStateComments','check'])
   }
 }
 </script>

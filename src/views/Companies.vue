@@ -11,6 +11,9 @@
             </v-flex>
             <v-flex justify-center>
                 <v-data-table :headers='headers' :items='companies'>
+                    <template v-slot:item.review_num>
+                        0
+                    </template>
                     <template v-slot:item.detail="{ item }">
                         <router-link :to="{ name: 'Company_reviews', params: { company_id: item.id }}">
                         <v-icon small class="mr-2">mdi-magnify</v-icon>
@@ -23,6 +26,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   created () {
     this.companies = this.$store.state.companies
@@ -31,11 +35,14 @@ export default {
     return {
       headers: [
         { text: '会社名', align: 'center', value: 'companyname' },
-        { text: 'レビュー数', align: 'center', value: 'review' },
+        { text: 'レビュー数', align: 'center', value: 'review_num' },
         { text: 'レビュー検索', align: 'center', value: 'detail' },
       ],
       companies: []
     }
+  },
+  methods: {
+    ...mapActions(['countCollection'])
   }
 }
 </script>

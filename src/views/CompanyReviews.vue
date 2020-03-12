@@ -2,7 +2,7 @@
     <v-container>
         <v-layout row wrap>
             <v-flex xs12 class="text-center">
-                <h1>会社レビュー 一覧表示画面</h1>
+                <h1>{{ $route.params.company_id }} レビュー 一覧表示画面</h1>
             </v-flex>
             <v-flex xs12 text-right>
                 <router-link :to="{ name: 'Review_edit', params: { company_id: $route.params.company_id } }">
@@ -44,7 +44,7 @@ export default {
       headers: [
         { text: '投稿者', align: 'center', value: 'name' },
         { text: '情報', align: 'center', value: 'info' },
-        { text: '操作', align: 'center', value: 'action', sortable: false },
+        { text: '編集', align: 'center', value: 'action', sortable: false },
         { text: '詳細表示', align: 'center', value: 'detail', sortable: false }
       ],
       reviews: []
