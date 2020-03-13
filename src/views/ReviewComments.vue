@@ -35,22 +35,18 @@
                         <v-list-item-avatar>
                           <v-img :src="item.photoURL"></v-img>
                         </v-list-item-avatar>
-
                         <v-list-item-content>
                           <v-list-item-title v-html="item.name"></v-list-item-title>
                           <v-textarea outlined rounded auto-grow v-model="item.info" rows="1" v-bind:disabled="edit"></v-textarea>
                         </v-list-item-content>
- 
                         <v-list-item-action>
-                          <v-btn icon>
-                            <v-icon color="grey lighten-1" @click="changeEdit">mdi-pencil</v-icon>
-                          </v-btn>
+                            <v-icon small class="mr-2" @click="changeEdit">mdi-pencil</v-icon>
                         </v-list-item-action>
-
                         <v-list-item-action>
-                          <v-btn icon>
-                            <v-icon v-if="edit===false" color="grey lighten-1" @click="update(item)">mdi-content-save</v-icon>
-                          </v-btn>
+                            <v-icon small class="mr-2" @click="deleteConfirm(item)">mdi-delete</v-icon>
+                        </v-list-item-action>
+                        <v-list-item-action>
+                            <v-icon v-if="edit===false" small class="mr-2" @click="update(item)">mdi-content-save</v-icon>
                         </v-list-item-action>
                     </v-list-item>
                     </v-col>
@@ -117,10 +113,14 @@ export default {
     },
     update (item) {
         this.changeEdit()
-        this.check(item)
-        this.updateComment({id: this.$route.params.comment_id, comment: item})
+        this.updateComment({ id: item.id, comment: item })
     },
-    ...mapActions(['addComment','updateComment','fetchComments','resetStateComments','check'])
+    deleteConfirm (item) {
+      if (confirm('削除してよろしいですか？')) {
+        this.deleteComment({ id: item.id, comment: item })
+      }
+    },
+    ...mapActions(['addComment','updateComment','fetchComments','resetStateComments','deleteComment'])
   }
 }
 </script>

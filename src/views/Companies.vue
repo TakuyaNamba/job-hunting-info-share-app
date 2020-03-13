@@ -18,6 +18,7 @@
                         <router-link :to="{ name: 'Company_reviews', params: { company_id: item.id }}">
                         <v-icon small class="mr-2">mdi-magnify</v-icon>
                         </router-link>
+                        <v-icon small class="mr-2" @click="deleteConfirm(item.id)">mdi-delete</v-icon>
                     </template>
                 </v-data-table>
             </v-flex>
@@ -36,13 +37,18 @@ export default {
       headers: [
         { text: '会社名', align: 'center', value: 'companyname' },
         { text: 'レビュー数', align: 'center', value: 'review_num' },
-        { text: 'レビュー検索', align: 'center', value: 'detail' },
+        { text: '操作', align: 'center', value: 'detail' },
       ],
       companies: []
     }
   },
   methods: {
-    ...mapActions(['countCollection'])
+    deleteConfirm (id) {
+      if (confirm('削除してよろしいですか？')) {
+        this.deleteCompany({ id })
+      }
+    },
+    ...mapActions(['countCollection','deleteCompany'])
   }
 }
 </script>

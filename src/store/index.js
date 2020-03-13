@@ -9,7 +9,6 @@ export default new Vuex.Store({
     login_user: null,
     size: null,
     drawer: false,
-    check: [],
     companies: [],
     reviews: [],
     comments: []
@@ -60,14 +59,23 @@ export default new Vuex.Store({
 
       state.comments[index] = comment
     },
-    check (state, check) {
-      state.check = check
+    deleteCompany (state, { id }) {
+      const index = state.companies.findIndex(company => company.id === id)
+
+      state.addresses.splice(index, 1)
+    },
+    deleteReview (state, { id }) {
+      const index = state.reviews.findIndex(review => review.id === id)
+
+      state.addresses.splice(index, 1)
+    },
+    deleteComment (state, { id }) {
+      const index = state.comments.findIndex(comment => comment.id === id)
+
+      state.addresses.splice(index, 1)
     }
   },
   actions: {
-    check ({ commit }, check){
-      commit('check', check)
-    },
     countCollection (getters, {company, review_num_new}) {
       if (getters.uid) {
         firebase.firestore().collection(`companies`).doc(company).set({
@@ -176,8 +184,29 @@ export default new Vuex.Store({
     },
     updateComment ({ getters, commit }, { id, comment }) {
       if (getters.uid) {
-        firebase.firestore().collection(`companies/${comment.companyname}/reviews/${comment.reviewer}/comments`).doc(comment.name).update(comment).then(() => {
+        firebase.firestore().collection(`companies/${comment.companyname}/reviews/${comment.reviewer}/comments`).doc(id).update(comment).then(() => {
           commit('updateComment', { id, comment })
+        })
+      }
+    },
+    deleteCompany ({ getters, commit }, { id }) {
+      if (getters.uid) {
+        firebase.firestore().collection(`companies`).doc(id).delete().then(() => {
+          commit('deleteCompany', { id })
+        })
+      }
+    },
+    deleteReview ({ getters, commit }, { id, review }) {
+      if (getters.uid) {
+        firebase.firestore().collection(`companies/${review.companyname}/reviews`).doc(id).delete().then(() => {
+          commit('deleteReview', { id })
+        })
+      }
+    },
+    deleteComment ({ getters, commit }, { id, comment }) {
+      if (getters.uid) {
+        firebase.firestore().collection(`companies/${comment.companyname}/reviews/${comment.reviewer}/comments`).doc(id).delete().then(() => {
+          commit('deleteComment', { id })
         })
       }
     }

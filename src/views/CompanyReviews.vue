@@ -18,6 +18,7 @@
                         <router-link :to="{ name: 'Review_edit', params: { review_id: item.id }}">
                         <v-icon small class="mr-2">mdi-pencil</v-icon>
                         </router-link>
+                        <v-icon small class="mr-2" @click="deleteConfirm(item)">mdi-delete</v-icon>
                     </template>
                     <template v-slot:item.detail="{ item }">
                         <router-link :to="{ name: 'Review_comments', params: { company_id: $route.params.company_id, review_id: item.id }}">
@@ -44,14 +45,19 @@ export default {
       headers: [
         { text: '投稿者', align: 'center', value: 'name' },
         { text: '情報', align: 'center', value: 'info' },
-        { text: '編集', align: 'center', value: 'action', sortable: false },
+        { text: '操作', align: 'center', value: 'action', sortable: false },
         { text: '詳細表示', align: 'center', value: 'detail', sortable: false }
       ],
       reviews: []
     }
   },
   methods : {
-    ...mapActions(['resetStateReviews','fetchReviews'])
+    deleteConfirm (item) {
+      if (confirm('削除してよろしいですか？')) {
+        this.deleteReview({ id: item.id, review: item })
+      }
+    },
+    ...mapActions(['resetStateReviews','fetchReviews','deleteReview'])
   }
 }
 </script>
