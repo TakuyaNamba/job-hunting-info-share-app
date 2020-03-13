@@ -15,7 +15,6 @@
                   <v-list-item>
                       <v-list-item-content>
                       <v-list-item-title class="title">{{ review.name }}</v-list-item-title>
-                      <v-list-item-subtitle>{{ review.university }}</v-list-item-subtitle>
                       </v-list-item-content>
                   </v-list-item>
                 </v-col>
@@ -57,7 +56,7 @@
               </v-row>
               <v-row no-gutters>
                 <v-col align="center" cols="6">
-                  <v-btn @click="$router.push({ name: 'Companies' })">もっと見る</v-btn>
+                  <v-btn @click="$router.push({ name: 'Companies' })">会社一覧に戻る</v-btn>
                 </v-col>
                 <v-col align="center" cols="6">
                   <v-btn color="info" @click="submit">コメント投稿</v-btn>

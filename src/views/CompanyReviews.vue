@@ -12,7 +12,7 @@
             <v-flex justify-center>
                 <v-data-table :headers='headers' :items='reviews'>
                     <template v-slot:item.info="{ item }">
-                        {{ item.info.substring(0,10)+"..." }}
+                        {{ item.info.substring(0,20)+"..." }}
                     </template>
                     <template v-slot:item.action="{ item }">
                         <router-link :to="{ name: 'Review_edit', params: { review_id: item.id }}">
@@ -36,6 +36,8 @@ import { mapActions } from 'vuex'
 
 export default {
   created () {
+    this.getReviewsize(this.$route.params.company_id)
+    this.updateReviewsize(this.$route.params.company_id)
     this.resetStateReviews()
     this.fetchReviews(this.$route.params.company_id)
     this.reviews = this.$store.state.reviews
@@ -57,7 +59,7 @@ export default {
         this.deleteReview({ id: item.id, review: item })
       }
     },
-    ...mapActions(['resetStateReviews','fetchReviews','deleteReview'])
+    ...mapActions(['resetStateReviews','fetchReviews','deleteReview','getReviewsize','updateReviewsize'])
   }
 }
 </script>

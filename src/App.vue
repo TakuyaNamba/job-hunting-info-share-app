@@ -4,9 +4,13 @@
       <v-app-bar-nav-icon v-show="$store.state.login_user" @click.stop="toggleSideMenu"></v-app-bar-nav-icon>
       <v-toolbar-title>就活生情報共有プラットホーム</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn icon v-if="$store.state.login_user">
-        <v-icon @click="logout">mdi-logout</v-icon>
-      </v-btn>
+      <router-link :to="{ name: 'User_edit', params: { user_id: $store.getters.uid } }">
+          <v-icon v-if="$store.state.login_user" class="mx-2">mdi-account</v-icon>
+      </router-link>
+      <router-link :to="{ name: 'Companies' }">
+          <v-icon v-if="$store.state.login_user" class="mx-2">mdi-home</v-icon>
+      </router-link>
+      <v-icon v-if="$store.state.login_user" class="mx-2" @click="logout">mdi-logout</v-icon>
     </v-app-bar>
     <SideNav/>
     <v-content>
@@ -29,8 +33,7 @@ export default {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.setLoginUser(user)
-        this.fetchCompanies()
-        if (this.$router.currentRoute.name === 'Home') this.$router.push({ name: 'Companies'}, () => {})
+        if (this.$router.currentRoute.name === 'Home') this.$router.push({ name: 'User_begin'}, () => {})
       } else {
         this.deleteLoginUser()
         this.$router.push({ name: 'Home' }, () => {})
@@ -41,7 +44,7 @@ export default {
     //
   }),
   methods : {
-    ...mapActions(['toggleSideMenu','setLoginUser','logout','deleteLoginUser','fetchCompanies'])
+    ...mapActions(['toggleSideMenu','setLoginUser','logout','deleteLoginUser'])
   }
 };
 </script>
