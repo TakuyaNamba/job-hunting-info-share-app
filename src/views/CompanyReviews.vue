@@ -36,8 +36,6 @@ import { mapActions } from 'vuex'
 
 export default {
   created () {
-    this.getReviewsize(this.$route.params.company_id)
-    this.updateReviewsize(this.$route.params.company_id)
     this.resetStateReviews()
     this.fetchReviews(this.$route.params.company_id)
     this.reviews = this.$store.state.reviews
@@ -59,7 +57,7 @@ export default {
         this.deleteReview({ id: item.id, review: item })
       }
     },
-    ...mapActions(['resetStateReviews','fetchReviews','deleteReview','getReviewsize','updateReviewsize'])
+    ...mapActions(['resetStateReviews','fetchReviews','deleteReview'])
   }
 }
 </script>

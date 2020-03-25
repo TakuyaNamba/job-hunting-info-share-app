@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import firebase from 'firebase'
-import createPersistedState from "vuex-persistedstate";
 
 Vue.use(Vuex)
 
@@ -10,7 +9,6 @@ export default new Vuex.Store({
     login_user: null,
     user: null,
     drawer: false,
-    review_size: 0,
     reviews: [],
     companies: [],
     comments: []
@@ -18,9 +16,6 @@ export default new Vuex.Store({
   mutations: {
     getUser (state, info) {
       state.user = info
-    },
-    getReviewsize (state, { size }) {
-      state.review_size = size
     },
     resetStateCompanies (state) {
       state.companies = []
@@ -70,17 +65,17 @@ export default new Vuex.Store({
     deleteCompany (state, { id }) {
       const index = state.companies.findIndex(company => company.id === id)
 
-      state.addresses.splice(index, 1)
+      state.companies.splice(index, 1)
     },
     deleteReview (state, { id }) {
       const index = state.reviews.findIndex(review => review.id === id)
 
-      state.addresses.splice(index, 1)
+      state.reviews.splice(index, 1)
     },
     deleteComment (state, { id }) {
       const index = state.comments.findIndex(comment => comment.id === id)
 
-      state.addresses.splice(index, 1)
+      state.comments.splice(index, 1)
     }
   },
   actions: {
@@ -88,15 +83,6 @@ export default new Vuex.Store({
       firebase.firestore().collection(`users`).doc(getters.uid).get().then(doc => {
         commit('getUser', { info: doc.data() })
       })
-    },
-    getReviewsize ( { commit }, id ) {
-      firebase.firestore().collection(`companies/${id}/reviews`).get().then(snap => {
-        commit('getReviewsize', {size: snap.size})
-      })
-    },
-    updateReviewsize ( { state }, id) {
-      firebase.firestore().collection(`companies`).doc(id).update({
-        review_size: state.review_size })
     },
     resetStateCompanies ({ commit }) {
       commit('resetStateCompanies')
@@ -168,17 +154,18 @@ export default new Vuex.Store({
         commit('updateCompany', { id, company })
       })
     },
-    addReview ({ getters, commit }, review ) {
+    addReview ({ getters }, review ) {
       if (getters.uid) {
-        firebase.firestore().collection(`companies/${review.companyname}/reviews`).doc(review.name).set({
+        firebase.firestore().collection(`companies/${review.companyname}/reviews`).add({
           name: review.name,
           companyname: review.companyname,
           info: review.info,
           uid: getters.uid,
           photoURL: getters.photoURL,
           timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(doc => {
-          commit('addReview', { id: doc.id, review })
+        })
+        firebase.firestore().collection(`companies/${review.companyname}/reviews`).get().then( snap => {
+          firebase.firestore().collection(`companies`).doc(review.companyname).update({review_size: snap.size }) 
         })
       }
     },
@@ -189,24 +176,21 @@ export default new Vuex.Store({
         })
       }
     },
-    addComment ({ getters, commit }, comment ) {
+    addComment ({ getters }, { company_id, review_id, comment } ) {
       if (getters.uid) {
-        firebase.firestore().collection(`companies/${comment.companyname}/reviews/${comment.reviewer}/comments`).doc(comment.name).set({
-          reviewer: comment.reviewer,
-          photoURL: comment.photoURL,
+        firebase.firestore().collection(`companies/${company_id}/reviews/${review_id}/comments`).add({
           name: comment.name,
-          companyname: comment.companyname,
+          photoURL: comment.photoURL,
+          companyname: company_id,
           info: comment.info,
           uid: getters.uid,
           timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(doc => {
-          commit('addComment', { id: doc.id, comment })
         })
       }
     },
-    updateComment ({ getters, commit }, { id, comment }) {
+    updateComment ({ getters, commit }, { id, company_id, review_id, comment }) {
       if (getters.uid) {
-        firebase.firestore().collection(`companies/${comment.companyname}/reviews/${comment.reviewer}/comments`).doc(id).update(comment).then(() => {
+        firebase.firestore().collection(`companies/${company_id}/reviews/${review_id}/comments`).doc(id).update(comment).then(() => {
           commit('updateComment', { id, comment })
         })
       }
@@ -221,13 +205,16 @@ export default new Vuex.Store({
     deleteReview ({ getters, commit }, { id, review }) {
       if (getters.uid) {
         firebase.firestore().collection(`companies/${review.companyname}/reviews`).doc(id).delete().then(() => {
+          firebase.firestore().collection(`companies/${review.companyname}/reviews`).get().then( snap => {
+            firebase.firestore().collection(`companies`).doc(review.companyname).update({review_size: snap.size }) 
+          })
           commit('deleteReview', { id })
         })
       }
     },
-    deleteComment ({ getters, commit }, { id, comment }) {
+    deleteComment ({ getters, commit }, { id, company_id, review_id }) {
       if (getters.uid) {
-        firebase.firestore().collection(`companies/${comment.companyname}/reviews/${comment.reviewer}/comments`).doc(id).delete().then(() => {
+        firebase.firestore().collection(`companies/${company_id}/reviews/${review_id}/comments`).doc(id).delete().then(() => {
           commit('deleteComment', { id })
         })
       }
@@ -241,6 +228,5 @@ export default new Vuex.Store({
     getCompanyById: state => id => state.companies.find(company => company.id === id),
     getReviewById: state => id => state.reviews.find(review => review.id === id),
     getCommentById: state => id => state.comments.find(comment => comment.id === id)
-  },
-  plugins: [createPersistedState()]
+  }
 })

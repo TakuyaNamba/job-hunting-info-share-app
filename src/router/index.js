@@ -24,7 +24,7 @@ const routes = [
     component: Homepage
   },
   {
-    path: '/users/begin',
+    path: '/users/:user_id?/begin',
     name: 'User_begin',
     component: UserFormBegin
   },

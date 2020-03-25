@@ -20,7 +20,7 @@
                 </v-col>
                 <v-col align="center" justify="center" cols="12">
                   <v-card-text>
-                    <v-text-field filled label="会社名" v-model="review.companyname" disabled="true"></v-text-field>
+                    <v-text-field filled label="会社名" v-model="$route.params.company_id" disabled="true"></v-text-field>
                     <v-textarea filled auto-grow label="会社情報" v-model="review.info" disabled="true"></v-textarea>
                   </v-card-text>
                 </v-col>
@@ -30,7 +30,7 @@
                   <v-subheader>コメント一覧</v-subheader>
                   <v-list two-line>
                   <v-col cols="12">
-                    <v-list-item v-for="item in comments" v-bind:key="item.photoURL">
+                    <v-list-item v-for="item in comments" v-bind:key="item.timestamp">
                         <v-list-item-avatar>
                           <v-img :src="item.photoURL"></v-img>
                         </v-list-item-avatar>
@@ -59,7 +59,7 @@
                   <v-btn @click="$router.push({ name: 'Companies' })">会社一覧に戻る</v-btn>
                 </v-col>
                 <v-col align="center" cols="6">
-                  <v-btn color="info" @click="submit">コメント投稿</v-btn>
+                  <v-btn :loading="isLoading" color="info" @click="submit">コメント投稿</v-btn>
                 </v-col>
               </v-row>
             </v-card>
@@ -73,10 +73,11 @@ import { mapActions } from 'vuex'
 
 export default {
   created () {
+    this.comment.name = this.$store.getters.userName
+    this.comment.photoURL = this.$store.getters.photoURL
     this.resetStateComments()
     this.fetchComments({company_id: this.$route.params.company_id, review_id: this.$route.params.review_id})
     this.comments = this.$store.state.comments
-    this.review.companyname = this.$route.params.company_id
     
     if (!this.$route.params.review_id) return
     const review = this.$store.getters.getReviewById(this.$route.params.review_id)
@@ -85,10 +86,6 @@ export default {
     } else {
       this.$router.push({ name: 'Company_reviews' })
     }
-    this.comment.reviewer = this.review.name
-    this.comment.photoURL = this.$store.getters.photoURL
-    this.comment.name = this.$store.getters.userName
-    this.comment.companyname = this.review.companyname
   },
   data () {
     return {
@@ -96,27 +93,29 @@ export default {
       headers: [
         { text: '会社名', align: 'center', value: 'companyname' },
       ],
-      review: {},
-      comment: {},
-      comments: {}
+      review: [],
+      comment: [],
+      comments: []
     }
   },
   methods: {
     submit () {
-      this.addComment(this.comment)
-      this.$router.push({ name: 'Review_comments', params: {company_id: this.review.companyname, review_id: this.comment.reviewer } })
-      this.comment.info = null
+      this.addComment( { company_id: this.$route.params.company_id, review_id: this.$route.params.review_id, comment: this.comment} )
+      this.resetStateComments()
+      this.fetchComments({company_id: this.$route.params.company_id, review_id: this.$route.params.review_id})
+      this.comments = this.$store.state.comments
+      this.comment.info = []
     },
     changeEdit() {
       this.edit = !this.edit
     },
     update (item) {
         this.changeEdit()
-        this.updateComment({ id: item.id, comment: item })
+        this.updateComment({ id: item.id, company_id: this.$route.params.company_id, review_id: this.$route.params.review_id, comment: item })
     },
     deleteConfirm (item) {
       if (confirm('削除してよろしいですか？')) {
-        this.deleteComment({ id: item.id, comment: item })
+        this.deleteComment({ id: item.id, company_id: this.$route.params.company_id, review_id: this.$route.params.review_id })
       }
     },
     ...mapActions(['addComment','updateComment','fetchComments','resetStateComments','deleteComment'])

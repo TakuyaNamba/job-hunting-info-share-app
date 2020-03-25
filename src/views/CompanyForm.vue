@@ -27,14 +27,14 @@ import { mapActions } from 'vuex'
 export default {
   data () {
     return {
-      company: {}
+      company: []
     }
   },
   methods: {
       submit () {
         this.addCompany(this.company)
         this.$router.push({ name: 'Companies' })
-        this.company = {}
+        this.company = []
     },
     ...mapActions(['addCompany'])
   }
